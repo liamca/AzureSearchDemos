@@ -1,0 +1,15 @@
+<viewModels:ResultsViewModel
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewModels="using:TrailFinder.ViewModels">
+
+    <viewModels:ResultsViewModel.Items>
+        <viewModels:ItemViewModel State_Alpha="0" Feature_Name="design one" Description="Maecenas praesent accumsan bibendum" County_Name="King"/>
+        <viewModels:ItemViewModel State_Alpha="1" Feature_Name="design two" Description="Dictumst eleifend facilisi faucibus" County_Name="King"/>
+        <viewModels:ItemViewModel State_Alpha="2" Feature_Name="design three" Description="Habitant inceptos interdum lobortis" County_Name="King"/>
+        <viewModels:ItemViewModel State_Alpha="3" Feature_Name="design four" Description="Nascetur pharetra placerat pulvinar" County_Name="King"/>
+        <viewModels:ItemViewModel State_Alpha="4" Feature_Name="design five" Description="Sagittis senectus sociosqu suscipit" County_Name="King"/>
+        <viewModels:ItemViewModel State_Alpha="5" Feature_Name="design six" Description="Torquent ultrices vehicula volutpat" County_Name="King"/>
+    </viewModels:ResultsViewModel.Items>
+
+</viewModels:ResultsViewModel>

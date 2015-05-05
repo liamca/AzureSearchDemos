@@ -1,0 +1,69 @@
+﻿<views:BasePage
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:views="using:BuildSessions.Views"
+    x:Class="BuildSessions.Views.ItemPage"
+    mc:Ignorable="d"
+    Background="#FF148AA4">
+    <Page.Transitions>
+        <TransitionCollection>
+            <NavigationThemeTransition>
+                    <ContinuumNavigationTransitionInfo/>
+            </NavigationThemeTransition>
+        </TransitionCollection>
+    </Page.Transitions>
+
+	<Grid x:Name="LayoutRoot">
+		<Grid.ChildrenTransitions>
+			<TransitionCollection>
+				<EntranceThemeTransition/>
+			</TransitionCollection>
+		</Grid.ChildrenTransitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<!-- Title Panel -->
+		<StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock x:Uid="AppTitle" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Margin="0,-6.5,11,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" FontSize="48" TextWrapping="WrapWholeWords" />
+                <TextBlock Text="{Binding FirstName}" Style="{StaticResource HeaderTextBlockStyle}" Margin="0,-6.5,11,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" FontSize="48" TextWrapping="WrapWholeWords" />
+                <TextBlock Text="{Binding LastName}" Style="{StaticResource HeaderTextBlockStyle}" Margin="0,-6.5,11,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" FontSize="48" TextWrapping="WrapWholeWords" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <TextBlock TextWrapping="Wrap" x:Uid="CompanyName" FontSize="26" Margin="0,0,5,0"/>
+                <TextBlock TextWrapping="Wrap" Text="{Binding CompanyName}" FontWeight="Bold" FontSize="26"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 
+            TODO: Content should be placed within the following grid 
+                  to show details for the current item
+        -->
+		<Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+
+			<StackPanel Margin="0,20,0,0.333" Grid.Row="1">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock TextWrapping="Wrap" x:Uid="EmailAddress" FontSize="20" Margin="0,0,5,0"/>
+					<TextBlock TextWrapping="Wrap" Text="{Binding EmailAddress}" FontSize="20"/>					
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+					<TextBlock TextWrapping="Wrap" x:Uid="Phone"  FontSize="20" Margin="0,0,5,0"/>
+					<TextBlock TextWrapping="Wrap" Text="{Binding Phone}" FontSize="20"/>	
+				</StackPanel>
+                <TextBlock TextWrapping="Wrap" x:Uid="ProductNamesLabel" FontSize="20" Margin="0,0,8,0"/>
+                <TextBlock TextWrapping="Wrap" FontSize="20" Text="{Binding ProductNameList}" Margin="0,0,8,0" Width="350"/>
+			</StackPanel>
+
+		</Grid>
+        
+	</Grid>
+</views:BasePage>

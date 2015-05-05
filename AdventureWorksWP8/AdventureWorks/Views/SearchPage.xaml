@@ -1,0 +1,128 @@
+﻿<views:BasePage
+    x:Class="BuildSessions.Views.SearchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:BuildSessions.Views"
+    mc:Ignorable="d" Background="#FF148AA4">
+	<views:BasePage.Resources>
+		<Thickness x:Key="PhoneBorderThickness">2.5</Thickness>
+		<FontWeight x:Key="PhoneButtonFontWeight">Semibold</FontWeight>
+		<x:Double x:Key="TextStyleLargeFontSize">18.14</x:Double>
+		<SolidColorBrush x:Key="ButtonDisabledBackgroundThemeBrush" Color="Transparent"/>
+		<Style x:Key="SpeechContentPresenterStyle1" TargetType="ContentPresenter"/>
+		<Style x:Key="SpeechButtonStyle" TargetType="Button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="{ThemeResource PhoneForegroundBrush}"/>
+			<Setter Property="Foreground" Value="{ThemeResource PhoneForegroundBrush}"/>
+			<Setter Property="BorderThickness" Value="{ThemeResource PhoneBorderThickness}"/>
+			<Setter Property="FontFamily" Value="{ThemeResource PhoneFontFamilyNormal}"/>
+			<Setter Property="FontWeight" Value="{ThemeResource PhoneButtonFontWeight}"/>
+			<Setter Property="FontSize" Value="{ThemeResource TextStyleLargeFontSize}"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid x:Name="Grid" Background="Transparent" Margin="0,0,62.167,36.667">
+							<VisualStateManager.VisualStateGroups>
+								<VisualStateGroup x:Name="CommonStates">
+									<VisualStateGroup.Transitions>
+										<VisualTransition From="Pressed" To="PointerOver">
+											<Storyboard>
+												<PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+											</Storyboard>
+										</VisualTransition>
+										<VisualTransition From="PointerOver" To="Normal">
+											<Storyboard>
+												<PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+											</Storyboard>
+										</VisualTransition>
+										<VisualTransition From="Pressed" To="Normal">
+											<Storyboard>
+												<PointerUpThemeAnimation Storyboard.TargetName="Grid"/>
+											</Storyboard>
+										</VisualTransition>
+									</VisualStateGroup.Transitions>
+									<VisualState x:Name="Normal"/>
+									<VisualState x:Name="PointerOver"/>
+									<VisualState x:Name="Pressed">
+										<Storyboard>
+											<PointerDownThemeAnimation Storyboard.TargetName="Grid"/>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonPressedForegroundThemeBrush}"/>
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="Border">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonPressedBackgroundThemeBrush}"/>
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+									<VisualState x:Name="Disabled">
+										<Storyboard>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonDisabledForegroundThemeBrush}"/>
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="Border">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonDisabledBorderThemeBrush}"/>
+											</ObjectAnimationUsingKeyFrames>
+											<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="Border">
+												<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonDisabledBackgroundThemeBrush}"/>
+											</ObjectAnimationUsingKeyFrames>
+										</Storyboard>
+									</VisualState>
+								</VisualStateGroup>
+							</VisualStateManager.VisualStateGroups>
+							<Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Margin="0">
+								<ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Style="{StaticResource SpeechContentPresenterStyle1}">
+								<Image HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="30" Source="ms-appx:///Assets/Microphone 1.png"/>
+								</ContentPresenter>
+							</Border>
+							
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</views:BasePage.Resources>
+	<Page.BottomAppBar>
+		<CommandBar>
+            <AppBarButton Icon="Find" Label="Find" Command="{Binding SearchSessionsCommand}"/>
+		</CommandBar>
+	</Page.BottomAppBar>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+       
+
+        <!-- Title Panel -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock x:Uid="AppHeader" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <TextBlock x:Uid="AppTitle" Text="Adventure Works Mobile Customer Management" TextWrapping="Wrap" Style="{ThemeResource SubheaderTextBlockStyle}" Margin="0,-6.5,0,26.5" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+        </StackPanel>
+
+        <!-- 
+            TODO: Content should be placed within the following grid 
+                  to show details for the current item
+        -->
+        <Grid Grid.Row="1" Margin="19,9.5,19,0">
+        	<StackPanel VerticalAlignment="Top">
+        		<StackPanel Margin="0,10,0,0">
+        			<TextBlock x:Uid="SearchLabel" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" VerticalAlignment="Top" Style="{StaticResource GroupHeaderTextBlockStyle}" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+        			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+        				<TextBox TextWrapping="Wrap" VerticalAlignment="Top" PlaceholderText="search" Text="{Binding SearchTerm, Mode=TwoWay}" Margin="0,23,0,0" HorizontalAlignment="Center" Width="277" FontSize="22" Height="39"/>
+        				<Button Command="{Binding RecognizeSpeechCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource SpeechButtonStyle}" Height="80" Width="71" Margin="10,20,0,0"/>
+        			</StackPanel>
+        		</StackPanel>
+        	</StackPanel>
+        </Grid>
+    </Grid>
+</views:BasePage>
