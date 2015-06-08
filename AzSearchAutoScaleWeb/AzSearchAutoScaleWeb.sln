@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzSearchAutoScaleWeb", "AzSearchAutoScaleWeb\AzSearchAutoScaleWeb.csproj", "{881D32CD-2123-48DD-AC49-C108DEF2A8D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{FB76F2AE-E0EB-4E08-B095-BFB0936B4B67}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{C9B34136-6021-484D-8914-466C19C3BE52}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\AzSearchAutoScaleWeb-WAWS-dev.json = PublishScripts\Configurations\AzSearchAutoScaleWeb-WAWS-dev.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzSearchScale", "AzSearchScale\AzSearchScale.csproj", "{05FA0BF2-DB23-4146-8C04-699A00F32568}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{881D32CD-2123-48DD-AC49-C108DEF2A8D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{881D32CD-2123-48DD-AC49-C108DEF2A8D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{881D32CD-2123-48DD-AC49-C108DEF2A8D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{881D32CD-2123-48DD-AC49-C108DEF2A8D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05FA0BF2-DB23-4146-8C04-699A00F32568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05FA0BF2-DB23-4146-8C04-699A00F32568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05FA0BF2-DB23-4146-8C04-699A00F32568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05FA0BF2-DB23-4146-8C04-699A00F32568}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C9B34136-6021-484D-8914-466C19C3BE52} = {FB76F2AE-E0EB-4E08-B095-BFB0936B4B67}
+	EndGlobalSection
+EndGlobal
