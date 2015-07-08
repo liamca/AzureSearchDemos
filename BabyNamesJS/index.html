@@ -119,6 +119,12 @@
 			Search();
 		});
 		
+		function HandleKey(e){
+			if(e.keyCode === 13){
+				Search();
+			}
+		}
+		
 		function Search() {
 
 			$("#status").html("Loading...");
@@ -215,7 +221,7 @@
 
 		  <div class="row">
 			<div class="col-sm-3 col-md-2 sidebar">
-				<p><input type="text" id="q" class="form-control" placeholder="Search..."></p>
+				<p><input type="text" id="q" class="form-control" onkeypress="HandleKey(event);" placeholder="Search..."></p>
 				<p>
 					<label for="yearVal">Year:</label>
 					<input type="text" id="yearVal" readonly style="border:0; color:#f6931f; font-weight:bold;">
