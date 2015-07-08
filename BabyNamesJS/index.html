@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Azure Search - Baby Names</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Azure Search - D3 Demo">
+
+		<!-- JQuery -->
+		<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"></script>
+		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/jquery-ui.min.js"></script>
+		<!-- Bootstrap core CSS -->
+		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+		<script src="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.4/bootstrap.min.js"></script>
+		<!-- D3 -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+		<script src="https://jardindesconnaissances.googlecode.com/svn-history/r82/trunk/public/js/d3.layout.cloud.js"></script>
+	</head>
+		
+	<style>
+		body {
+		  padding-top: 50px;
+		}
+
+		.sub-header {
+		  padding-bottom: 10px;
+		  border-bottom: 1px solid #eee;
+		}
+
+		.navbar-fixed-top {
+		  border: 0;
+		}
+
+		.sidebar {
+		  display: none;
+		}
+		@media (min-width: 768px) {
+		  .sidebar {
+			position: fixed;
+			top: 51px;
+			bottom: 0;
+			left: 0;
+			z-index: 1000;
+			display: block;
+			padding: 20px;
+			overflow-x: hidden;
+			overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+			background-color: #f5f5f5;
+			border-right: 1px solid #eee;
+		  }
+		}
+
+		.nav-sidebar {
+		  margin-right: -21px; /* 20px padding + 1px border */
+		  margin-bottom: 20px;
+		  margin-left: -20px;
+		}
+		.nav-sidebar > li > a {
+		  padding-right: 20px;
+		  padding-left: 20px;
+		}
+		.nav-sidebar > .active > a,
+		.nav-sidebar > .active > a:hover,
+		.nav-sidebar > .active > a:focus {
+		  color: #fff;
+		  background-color: #428bca;
+		}
+
+		.main {
+		  padding: 20px;
+		}
+		@media (min-width: 768px) {
+		  .main {
+			padding-right: 40px;
+			padding-left: 40px;
+		  }
+		}
+		.main .page-header {
+		  margin-top: 0;
+		}
+
+		.placeholders {
+		  margin-bottom: 30px;
+		  text-align: center;
+		}
+		.placeholders h4 {
+		  margin-bottom: 0;
+		}
+		.placeholder {
+		  margin-bottom: 20px;
+		}
+		.placeholder img {
+		  display: inline-block;
+		  border-radius: 50%;
+		}
+	</style>
+
+	<script>
+	    var fill = d3.scale.category20();
+		var apiKey = "252044BE3886FE4A8E3BAA4F595114BB";
+
+		$(function () {
+			$( "#slider-year" ).slider({
+			  value:2013,
+			  min: 1880,
+			  max: 2013,
+			  step: 1,
+			  slide: function( event, ui ) {
+				$( "#yearVal" ).val( ui.value );
+			  }
+			});
+		
+			$( "#yearVal" ).val( "2013" );
+			
+			// Do initial search based on all names
+			Search();
+		});
+		
+		function Search() {
+
+			$("#status").html("Loading...");
+			var text =  $("#q").val();
+			var year =  $( "#yearVal" ).val();
+
+			var searchQuery = {
+			  "async": true,
+			  "crossDomain": true,
+			  "url": "https://azs-playground.search.windows.net/indexes/babynames/docs?api-version=2015-02-28&$orderby=count+desc&$top=100&$select=firstName,count&search=" + text + "*&$filter=year+eq+" + year,
+			  "method": "GET",
+			  "headers": {
+				"api-key": apiKey,
+				"content-type": "application/json; charset=utf-8"
+			  }
+			}
+
+			$.ajax(searchQuery).done(function (response) {
+			
+				if (response["value"].length > 0)
+				{
+					var maxCount = response["value"][0]["count"];
+					var minCount = response["value"][response["value"].length - 1]["count"];
+
+					// create a D3 compatible JSON doc 
+					var d3JSON  = [];
+					// babyname.size = ((name.size - minCount) / (maxCount - minCount) * 40) + 20;
+					for (var i = 0; i < response["value"].length; i++) {
+						d3JSON.push({
+							text: response["value"][i].firstName,
+							size: ((response["value"][i].count - minCount) / (maxCount - minCount) * 40) + 20
+						});
+					}
+
+					d3.select("#namecloud").select("svg").remove();
+					if (d3JSON.length > 0) {
+						d3.layout.cloud().size([600, 600])
+							.words(d3JSON)
+							.padding(5)
+							.rotate(function () { return ~~(Math.random() * 2) * 90; })
+							.font("Impact")
+							.fontSize(function (d) { return d.size; })
+							.on("end", draw)
+							.start();
+					}
+
+				}
+				$("#status").html("");
+				
+			});
+
+			function draw(words) {
+				d3.select("#namecloud").append("svg")
+					.attr("width", 600)
+					.attr("height", 600)
+				  .append("g")
+					.attr("transform", "translate(300,300)")
+				  .selectAll("text")
+					.data(words)
+				  .enter().append("text")
+					.style("font-size", function(d) { return d.size + "px"; })
+					.style("font-family", "Impact")
+					.style("fill", function(d, i) { return fill(i); })
+					.attr("text-anchor", "middle")
+					.attr("transform", function(d) {
+						return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+					})
+					.text(function(d) { return d.text; });
+			}
+
+		}
+
+
+	</script>
+
+	<body>
+
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		  <div class="container-fluid">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="#">Azure Search - Baby Names</a>
+			</div>
+		  </div>
+		</div>
+
+		<div class="container-fluid">
+		</div>
+
+		  <div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<p><input type="text" id="q" class="form-control" placeholder="Search..."></p>
+				<p>
+					<label for="yearVal">Year:</label>
+					<input type="text" id="yearVal" readonly style="border:0; color:#f6931f; font-weight:bold;">
+				</p>
+				<div id="slider-year"></div>
+				<br /><br />
+				<p><input type="button" id="submit" class="btn btn-primary" onclick="Search();" value="Search"></p>
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<div id="namecloud"></div>
+				<div id="status">Loading...</div>
+			</div>
+		  </div>
+
+	</body>
+</html>
