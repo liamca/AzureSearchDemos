@@ -1,0 +1,302 @@
+﻿<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.2.min.js"></script>
+<link rel="stylesheet" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/jquery-ui.min.js"></script>
+
+<!-- Attach CSS for step through tutorial tool -->
+<script src="~/Scripts/bootstrap-tour-standalone.min.js"></script>
+<link href="~/Content/bootstrap-tour-standalone.min.css" rel="stylesheet" />
+
+<script>
+    $(function () {
+        $("#q").autocomplete({
+            source: "/home/suggest",
+            minLength: 2,
+            select: function (event, ui) {
+                Search();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    var departmentFacet, categoryFacet, priceFacet, lowFatFacet, sortType, currentPage;
+    $(function () {
+        // Load the initial data
+        currentPage = 1;
+        departmentFacet = '';
+        categoryFacet = '';
+        priceFacet = '';
+        lowFatFacet = '';
+        document.getElementById("q").focus();
+        sortType = 'featured';
+
+        Search();
+
+        // Execute search if user clicks enter
+        $("#q").keyup(function (event) {
+            if (event.keyCode == 13) {
+                Search();
+            }
+        });
+
+
+
+    });
+
+    function Search() {
+        $("#item_details_div").html("Loading...");
+        var q = $("#q").val();
+        $.post('/home/search',
+        {
+            q: q,
+            departmentFacet: departmentFacet,
+            categoryFacet: categoryFacet,
+            priceFacet: priceFacet,
+            lowFatFacet: lowFatFacet,
+            sortType: sortType,
+            currentPage: currentPage
+        },
+        function (data) {
+            UpdateDepartmentFacets(data.Facets.product_department);
+            UpdateCategoryFacets(data.Facets.product_category);
+            UpdatePriceFacets(data.Facets.srp);
+            UpdateLowFatFacets(data.Facets.low_fat);
+            UpdateJobDetails(data);
+            UpdatePagination(data.Count);
+            UpdateFilterReset();
+        });
+
+    }
+
+    function UpdateFilterReset() {
+        // This allows users to remove filters
+        var htmlString = '';
+        if ((departmentFacet != '') || (categoryFacet != '') || (priceFacet != '') || (lowFatFacet != '')) {
+            htmlString += '<b>Current Filters:</b><br>';
+            if (departmentFacet != '')
+                htmlString += departmentFacet + ' [<a href="javascript:void(0)" onclick="RemoveFacet(\'departmentFacet\')">X</a>]<br>';
+            if (categoryFacet != '')
+                htmlString += categoryFacet + ' [<a href="javascript:void(0)" onclick="RemoveFacet(\'categoryFacet\')">X</a>]<br>';
+            if (priceFacet != '') {
+                var lowRange = parseInt(priceFacet);
+                var highRange = lowRange + 1;
+                htmlString += '$' + lowRange.toLocaleString() + ' - $' + highRange.toLocaleString() + ' [<a href="javascript:void(0)" onclick="RemoveFacet(\'priceFacet\')">X</a>]<br>';
+            if (lowFatFacet != '')
+                htmlString += lowFatFacet + ' [<a href="javascript:void(0)" onclick="RemoveFacet(\'lowFatFacet\')">X</a>]<br>';
+            }
+        }
+        $("#filterReset").html(htmlString);
+    }
+
+    function RemoveFacet(facet) {
+        // Remove a facet
+        if (facet == "departmentFacet")
+            departmentFacet = '';
+        if (facet == "categoryFacet")
+            categoryFacet = '';
+        if (facet == "priceFacet")
+            priceFacet = '';
+        if (facet == "lowFatFacet")
+            lowFatFacet = '';
+
+        Search();
+    }
+
+
+    function UpdatePagination(docCount) {
+        // Update the pagination
+        var totalPages = Math.round(docCount / 10);
+        // Set a max of 5 items and set the current page in middle of pages
+        var startPage = currentPage;
+        if ((startPage == 1) || (startPage == 2))
+            startPage = 1;
+        else
+            startPage -= 2;
+
+        var maxPage = startPage + 5;
+        if (totalPages < maxPage)
+            maxPage = totalPages + 1;
+        var backPage = parseInt(currentPage) - 1;
+        if (backPage < 1)
+            backPage = 1;
+        var forwardPage = parseInt(currentPage) + 1;
+
+        var htmlString = '<li><a href="javascript:void(0)" onclick="GoToPage(\'' + backPage + '\')" class="fa fa-angle-left"></a></li>';
+        for (var i = startPage; i < maxPage; i++) {
+            if (i == currentPage)
+                htmlString += '<li  class="active"><a href="#">' + i + '</a></li>';
+            else
+                htmlString += '<li><a href="javascript:void(0)" onclick="GoToPage(\'' + parseInt(i) + '\')">' + i + '</a></li>';
+        }
+
+        htmlString += '<li><a href="javascript:void(0)" onclick="GoToPage(\'' + forwardPage + '\')" class="fa fa-angle-right"></a></li>';
+        $("#pagination").html(htmlString);
+        $("#paginationFooter").html(htmlString);
+
+
+    }
+
+    function GoToPage(page) {
+        currentPage = page;
+        Search();
+    }
+
+    function UpdateDepartmentFacets(data) {
+        var facetResultsHTML = '';
+        for (var i = 0; i < data.length; i++) {
+            facetResultsHTML += '<li><a href="javascript:void(0)" onclick="ChooseDepartmentFacet(\'' + data[i].Value + '\');">' + data[i].Value + ' (' + data[i].Count + ')</span></a></li>';
+        }
+
+        $("#department_facets").html(facetResultsHTML);
+    }
+
+    function ChooseDepartmentFacet(facet) {
+        departmentFacet = facet;
+        Search();
+    }
+
+
+    function UpdateCategoryFacets(data) {
+        var facetResultsHTML = '';
+        for (var i = 0; i < data.length; i++) {
+            facetResultsHTML += '<li><a href="javascript:void(0)" onclick="ChooseCategoryFacet(\'' + data[i].Value + '\');">' + data[i].Value + ' (' + data[i].Count + ')</span></a></li>';
+        }
+
+        $("#category_facets").html(facetResultsHTML);
+    }
+
+    function ChooseCategoryFacet(facet) {
+        categoryFacet = facet;
+        Search();
+    }
+
+    function UpdatePriceFacets(data) {
+        var facetResultsHTML = '';
+        for (var i = 0; i < data.length; i++) {
+            var lowRange = parseInt(data[i].Value);
+            var highRange = lowRange + 1;
+
+            facetResultsHTML += '<li><a href="javascript:void(0)" onclick="ChoosePriceFacet(\'' + data[i].Value + '\');">$' + lowRange.toLocaleString() + ' - $' + highRange.toLocaleString() + ' (' + data[i].Count + ')</span></a></li>';
+        }
+
+        $("#price_facets").html(facetResultsHTML);
+    }
+
+    function ChoosePriceFacet(facet) {
+        priceFacet = facet;
+        Search();
+    }
+
+    function UpdateLowFatFacets(data) {
+        var facetResultsHTML = '';
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Value == 'f')
+                facetResultsHTML += '<li><a href="javascript:void(0)" onclick="ChooseLowFatFacet(\'' + data[i].Value + '\');">With Fat (' + data[i].Count + ')</span></a></li>';
+            else
+                facetResultsHTML += '<li><a href="javascript:void(0)" onclick="ChooseLowFatFacet(\'' + data[i].Value + '\');">Low Fat (' + data[i].Count + ')</span></a></li>';
+        }
+
+        $("#low_fat_facets").html(facetResultsHTML);
+    }
+
+    function ChooseLowFatFacet(facet) {
+        lowFatFacet = facet;
+        Search();
+    }
+
+    function setSortType() {
+        sortType = $("#cmbSortType").val();
+        Search();
+    }
+
+    function UpdateJobDetails(data) {
+        var itemDetailsHTML = '';
+        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        $("#available-items-label").html('Available Items <small>(' + data.Count + " items)</small>");
+        $("#jobs-count").html(data.Count);
+
+        $("#available_items_subheader").html(data.Count + ' Available Items');
+
+        for (var i = 0; i < data.Results.length; i++) {
+
+            itemDetailsHTML += '<div class="jobs-item with-thumb">';
+            itemDetailsHTML += '<div class="thumb"><a href="/home/details?id=' + data.Results[i].Document.product_id + '"><img style="max-height: 70px; max-width: 70px;" src="' + data.Results[i].Document.url + '" alt=""></a></div>';
+
+            itemDetailsHTML += '<div class="clearfix visible-xs"></div>';
+            itemDetailsHTML += '<h6 class="title"><a href="/home/details?id=' + data.Results[i].Document.product_id + '">' + data.Results[i].Document.product_name + '</a>&nbsp;-&nbsp$' + data.Results[i].Document.srp + '.00</h6>';
+            itemDetailsHTML += '<span class="meta">' + data.Results[i].Document.brand_name + '</span>';
+
+            itemDetailsHTML += '</div>';
+            itemDetailsHTML += '</div>';
+
+        }
+
+        $("#item_details_div").html(itemDetailsHTML);
+    }
+
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 page-sidebar">
+            <aside>
+                <div class="sidebar-container">
+                    <div class="widget sidebar-widget jobs-search-widget">
+                        <h5 class="widget-title" id="title">Search</h5>
+                        <div class="widget-content clearfix">
+                            <div id="remote">
+                                <input class="form-control walkthrough-1" type="text" id="q" placeholder="Search Jobs">
+
+                                <input type="submit" class="typeahead search-submit" value=" " onclick="Search();">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget sidebar-widget jobs-filter-widget">
+                        <h5 class="widget-title">Filter Results</h5>
+                        <p id="filterReset"></p>
+                        <div class="widget-content">
+                            <h6 id="businessTitleFacetTitle">Department</h6>
+                            <ul class="filter-list" id="department_facets"></ul>
+
+                            <h6>Category</h6>
+                            <ul class="filter-list" id="category_facets"></ul>
+
+                            <h6>Price</h6>
+                            <ul class="filter-list" id="price_facets"></ul>
+
+                            <h6>Fat Content</h6>
+                            <ul class="filter-list" id="low_fat_facets">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div> <!-- end .page-sidebar -->
+
+        <div class="col-sm-8 page-content">
+            
+            <h3><span class="jobs-count" id="jobs-count"></span> Available Items</h3>
+
+            <div class="clearfix">
+                <select class="form-control pull-left" id="cmbSortType" onchange="setSortType();">
+                    <option value="default">Relevance</option>
+                    <option value="priceDesc">Price (High to Low)</option>
+                    <option value="priceIncr">Price (Low to High)</option>
+                </select>
+
+                <ul id="pagination" class="pagination pull-right">
+                </ul>
+            </div>
+
+            <div id="item_details_div">
+            </div>
+
+            <div class="clearfix">
+                <ul id="paginationFooter" class="pagination pull-right">
+                </ul>
+            </div>
+        </div> <!-- end .page-content -->
+    </div> <!-- end .container -->
+</div> <!-- end .row -->

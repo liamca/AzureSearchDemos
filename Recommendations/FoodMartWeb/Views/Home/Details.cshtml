@@ -1,0 +1,120 @@
+﻿<script src="http://twitter.github.io/typeahead.js/js/jquery-1.10.2.min.js"></script>
+
+<script>
+    $(function () {
+        LookUp();
+    });
+    
+    function LookUp() {
+        // Get center of map to use to score the search results
+        var query_string = {};
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        if (vars.length > 0) {
+            $.post('/home/lookup',
+            {
+                id: vars[0].substring(3)
+            },
+            function (data) {
+                UpdateJobDetails(data);
+                // If there are some recommendations look them up
+                if (data.Result.recommendations.length > 0) {
+                    $.post('/home/Recommendations',
+                    {
+                        relatedItems: JSON.stringify(data.Result.recommendations)
+                    },
+                    function (data) {
+                        // Add the recommended items
+                        itemDetailsHTML = '<h4 class="bottom-line">Customers Who Bought This Item Also Bought</h4>';
+                        for (var i = 0; i < data.Results.length; i++) {
+
+                            itemDetailsHTML += '<div class="jobs-item with-thumb">';
+                            itemDetailsHTML += '<div class="thumb"><a href="/home/details?id=' + data.Results[i].Document.product_id + '"><img style="max-height: 70px; max-width: 70px;" src="' + data.Results[i].Document.url + '" alt=""></a></div>';
+
+                            itemDetailsHTML += '<div class="clearfix visible-xs"></div>';
+                            itemDetailsHTML += '<h6 class="title"><a href="/home/details?id=' + data.Results[i].Document.product_id + '">' + data.Results[i].Document.product_name + '</a>&nbsp;-&nbsp$' + data.Results[i].Document.srp + '.00</h6>';
+                            itemDetailsHTML += '<span class="meta">' + data.Results[i].Document.brand_name + '</span>';
+
+                            itemDetailsHTML += '</div>';
+                            itemDetailsHTML += '</div>';
+
+                        }
+
+                        $("#item_details_div").html(itemDetailsHTML);
+
+                    });
+                }
+            });
+        }
+
+    }
+
+    function UpdateJobDetails(data) {
+        var jobDetailsHTML = '';
+        var imgCounter = 0;
+
+        $("#url").attr("src", data.Result.url);
+        $("#product_id").html(data.Result.product_id);
+        $("#product_name").html(data.Result.product_name);
+        $("#brand_name").html(data.Result.brand_name);
+        $("#product_category").html(data.Result.product_category);
+        $("#product_subcategory").html(data.Result.product_subcategory);
+        
+        var srp = '$' + data.Result.srp.toLocaleString();
+        $("#price").html(srp);
+
+        $("#loading").html("");
+    }
+
+</script>
+<div id="page-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 page-content">
+                <div class="clearfix mb30 hidden-xs">
+                    <a href="/" class="btn btn-gray pull-left">Back to Home Page</a>
+                </div>
+
+                <div class="jobs-item jobs-single-item">
+                    <div class="thumb"><img id="url" alt=""></div>
+                    <div class="clearfix visible-xs"></div>
+                    <br clear="all" />
+                    <div id="loading">Loading...</div>
+
+                    <h5>Product ID</h5>
+                    <div id="product_id"></div>
+
+                    <h5>Product Name</h5>
+                    <div id="product_name"></div>
+
+                    <h5>Price</h5>
+                    <div id="price"></div>
+
+                    <h5>Brand</h5>
+                    <div id="brand_name"></div>
+
+                    <h5>Category</h5>
+                    <div id="product_category"></div>
+
+                    <h5>Subcategory</h5>
+                    <div id="product_subcategory"></div>
+
+                </div>
+
+            </div> <!-- end .page-content -->
+            <div class="col-sm-4 page-sidebar">
+                <aside>
+                    <div class="widget sidebar-widget white-container candidates-single-widget">
+                        <div class="widget-content">
+                            <div id="item_details_div">
+                            </div>
+
+                        </div>
+                    </div>
+                </aside>
+            </div> <!-- end .page-sidebar -->
+
+        </div>
+    </div> <!-- end .container -->
+</div> <!-- end #page-content -->
+
