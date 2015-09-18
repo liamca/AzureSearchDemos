@@ -34,7 +34,7 @@ namespace FoodMartSetup
 
         private static string zipFile = @"mahout-distribution-0.10.0.zip";
         private static string extractPath = @"c:\dist";
-        private static string azureBlobDir = "dist1";
+        private static string azureBlobDir = "dist";
 
 
 
@@ -55,8 +55,8 @@ namespace FoodMartSetup
         static void Main(string[] args)
         {
             //Download Mahout distribution and store in Azure Blob 
-            //DownloadAndUnzipMahoutDistribution();
-            //UploadMahoutDistributiontoBlobStorage();
+            DownloadAndUnzipMahoutDistribution();
+            UploadMahoutDistributiontoBlobStorage();
 
             UploadHiveQueryToBlobStorage();
 
