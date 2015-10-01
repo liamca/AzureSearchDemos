@@ -67,10 +67,13 @@ namespace NYCJobsWeb.Controllers
                 suggestions.Add(result.Text);
             }
 
+            // Only return unique suggestions
+            var distinctSuggestions = (from w in suggestions
+                                       select w).Distinct().ToList();
             return new JsonResult
             {
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet,
-                Data = suggestions
+                Data = distinctSuggestions
             };
 
         }
